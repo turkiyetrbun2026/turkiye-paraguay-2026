@@ -1,121 +1,135 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>2026 Türkiye - Paraguay Tribün Koordinasyonu</title>
+<title>Türkiye - Paraguay Tribün Koordinasyonu</title>
 
 <style>
 body{
-    font-family:Arial,sans-serif;
-    margin:0;
-    background:#f4f4f4;
+  font-family:Arial,sans-serif;
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
 }
-
-header{
-    background:#c8102e;
-    color:white;
-    text-align:center;
-    padding:20px;
-}
-
-.container{
-    max-width:1200px;
-    margin:auto;
-    padding:20px;
-}
-
 img{
-    width:100%;
-    border-radius:10px;
+  width:100%;
+  border-radius:10px;
 }
-
-.info{
-    background:white;
-    padding:15px;
-    margin-top:15px;
-    margin-bottom:15px;
-    border-radius:10px;
-}
-
 table{
-    width:100%;
-    background:white;
-    border-collapse:collapse;
+  width:100%;
+  border-collapse:collapse;
 }
-
+th,td{
+  border:1px solid #ddd;
+  padding:8px;
+}
 th{
-    background:#c8102e;
-    color:white;
-    padding:12px;
+  background:#d32f2f;
+  color:white;
 }
-
-td{
-    border:1px solid #ddd;
-    padding:10px;
+input{
+  width:95%;
 }
-
-footer{
-    text-align:center;
-    padding:30px;
-    color:#666;
+button{
+  padding:6px 12px;
 }
 </style>
-
 </head>
 
 <body>
 
-<header>
-<h1>🇹🇷 Türkiye - Paraguay 2026</h1>
-<h2>Tribün Koordinasyon Sayfası</h2>
-</header>
-
-<div class="container">
+<h1>🇹🇷 Türkiye - Paraguay 2026 Tribün Koordinasyonu</h1>
 
 <img src="stadium.jpg">
 
-<div class="info">
-<b>Nasıl Kullanılır?</b><br><br>
-Lütfen bulunduğunuz blok için adınızı yazın.<br>
-Her blok için bir tribün lideri belirlenmesi hedeflenmektedir.
-</div>
+<br><br>
 
-<table>
-
+<table id="tbl">
+<thead>
 <tr>
 <th>Taraf</th>
 <th>Blok</th>
 <th>Tribün Lideri</th>
 </tr>
-
-<tr><td>West</td><td>101</td><td></td></tr>
-<tr><td>West</td><td>102</td><td></td></tr>
-<tr><td>West</td><td>103</td><td></td></tr>
-<tr><td>West</td><td>104</td><td></td></tr>
-<tr><td>West</td><td>105</td><td></td></tr>
-<tr><td>West</td><td>106</td><td></td></tr>
-<tr><td>West</td><td>107</td><td></td></tr>
-<tr><td>West</td><td>108</td><td></td></tr>
-<tr><td>West</td><td>109</td><td></td></tr>
-<tr><td>West</td><td>110</td><td></td></tr>
-
-<tr><td>East</td><td>115</td><td></td></tr>
-<tr><td>East</td><td>116</td><td></td></tr>
-<tr><td>East</td><td>117</td><td></td></tr>
-<tr><td>East</td><td>118</td><td></td></tr>
-<tr><td>East</td><td>119</td><td></td></tr>
-<tr><td>East</td><td>120</td><td></td></tr>
-<tr><td>East</td><td>121</td><td></td></tr>
-<tr><td>East</td><td>122</td><td></td></tr>
-
+</thead>
+<tbody></tbody>
 </table>
 
-</div>
+<script type="module">
 
-<footer>
-World Cup 2026 • Türkiye Taraftar Organizasyonu
-</footer>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import {
+getFirestore,
+doc,
+setDoc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD1JM4XQbbnwioyxJgt_7Z79BBJ1bkeuL4",
+  authDomain: "turkiye-paraguay-2026.firebaseapp.com",
+  projectId: "turkiye-paraguay-2026",
+  storageBucket: "turkiye-paraguay-2026.firebasestorage.app",
+  messagingSenderId: "1078129476493",
+  appId: "1:1078129476493:web:4d08389baa0bfec90973c4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const blocks = [
+101,102,103,104,105,
+115,116,117,118,119
+];
+
+const tbody=document.querySelector("#tbl tbody");
+
+async function loadRows(){
+
+for(const block of blocks){
+
+const ref=doc(db,"leaders",String(block));
+const snap=await getDoc(ref);
+
+let leader="";
+
+if(snap.exists()){
+leader=snap.data().name || "";
+}
+
+const row=document.createElement("tr");
+
+row.innerHTML=`
+<td>${block<115?'West':'East'}</td>
+<td>${block}</td>
+<td>
+<input id="i${block}" value="${leader}">
+<button onclick="saveLeader(${block})">Kaydet</button>
+</td>
+`;
+
+tbody.appendChild(row);
+}
+}
+
+window.saveLeader=async function(block){
+
+const name=document.getElementById("i"+block).value;
+
+await setDoc(
+doc(db,"leaders",String(block)),
+{
+name:name
+}
+);
+
+alert("Kaydedildi");
+}
+
+loadRows();
+
+</script>
 
 </body>
 </html>
