@@ -32,12 +32,11 @@ img{
   align-items:flex-start;
 }
 #left-col{
-  flex:1;
+  flex:0 0 650px;
   min-width:0;
 }
 #right-col{
-  width:320px;
-  flex-shrink:0;
+  flex:1;
   display:flex;
   flex-direction:column;
   gap:16px;
@@ -144,7 +143,7 @@ button.saved{
 /* Announcement card */
 .ann-title{
   font-weight:bold;
-  font-size:14px;
+  font-size:16px;
   margin-bottom:10px;
   color:#333;
 }
@@ -155,8 +154,8 @@ button.saved{
   gap:8px;
 }
 .card ul li{
-  font-size:13px;
-  line-height:1.45;
+  font-size:15px;
+  line-height:1.55;
   color:#444;
 }
 
@@ -223,6 +222,20 @@ button.saved{
         <li>Tezahürat geldiğinde sırtını sahaya dönüp seyircilere bakarak tribünü yönlendirmek.</li>
         <li>El koordinasyonu veya hazırlanan okuma kartları ile tezahüratlara liderlik etmek.</li>
       </ul>
+    </div>
+
+    <div class="card">
+      <div class="ann-title">🎤 Örnek Tezahürat</div>
+      <p style="font-size:15px;color:#333;margin-bottom:10px;">
+        <strong>Kırmızı - Beyaz - En Büyük Türkiye</strong>
+      </p>
+      <p style="font-size:14px;color:#555;margin-bottom:12px;line-height:1.5;">
+        Seyirciler karşılıklı olarak <em>Kırmızı / Beyaz / En Büyük Türkiye</em> şeklinde tezahürat yaparlar.
+      </p>
+      <a href="https://www.youtube.com/watch?v=MbOs1Ht32ms" target="_blank"
+         style="display:inline-block;background:#d62828;color:white;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:bold;">
+        ▶ YouTube'da İzle
+      </a>
     </div>
 
   </div>
