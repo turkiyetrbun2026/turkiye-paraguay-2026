@@ -223,9 +223,11 @@ button.locked{
 
 @media(max-width:768px){
   input[type=text]{ width:120px; }
-  #layout{ flex-direction:column; }
-  #left-col{ flex:none; width:100%; }
+  #layout{ flex-direction:column; padding:0; }
+  #left-col{ flex:0 0 100%; width:100%; max-width:100%; }
   #right-col{ width:100%; position:static; }
+  table{ font-size:13px; }
+  th, td{ padding:6px; }
 }
 </style>
 </head>
