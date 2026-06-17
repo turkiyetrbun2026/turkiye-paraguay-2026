@@ -84,7 +84,7 @@ th{
   gap:8px;
 }
 input[type=text]{
-  width:220px;
+  width:140px;
   padding:6px;
   font-size:14px;
 }
@@ -189,6 +189,7 @@ button.locked{
       <strong>Filtrele:</strong>
       <label><input type="checkbox" id="chk-west" checked> WEST</label>
       <label><input type="checkbox" id="chk-east" checked> EAST</label>
+      <button onclick="migrateData()" style="background:#e65100;margin-left:auto;">🔧 Eski Veriyi Taşı</button>
     </div>
 
     <table id="tbl">
@@ -196,7 +197,8 @@ button.locked{
         <tr>
           <th>Taraf</th>
           <th>Blok</th>
-          <th>Tribün Lideri</th>
+          <th>Lider 1</th>
+          <th>Lider 2</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -323,28 +325,40 @@ async function loadRows(){
   for(const block of ALL_BLOCKS){
     const ref = doc(db,"leaders",String(block));
     const snap = await getDoc(ref);
-    let leader = "";
+    let l1 = "", l2 = "";
     if(snap.exists()){
-      leader = snap.data().name || "";
+      l1 = snap.data().leader1 || "";
+      l2 = snap.data().leader2 || "";
     }
-    names[block] = leader;
+    names[block] = { l1, l2 };
 
     const side = WEST_SET.has(block) ? "west" : "east";
     const row = document.createElement("tr");
     row.dataset.side = side;
 
-    const isLocked = !!leader;
+    const l1Locked = !!l1;
+    const l2Locked = !!l2;
 
     row.innerHTML = `
       <td>${side === "west" ? "West" : "East"}</td>
       <td>${block}</td>
       <td>
         <div class="input-row">
-          <input type="text" id="i${block}" value="${leader}" placeholder="İsim giriniz"
-            ${isLocked ? 'disabled class="locked"' : ''}>
-          <button id="b${block}"
-            ${isLocked ? 'disabled class="locked"' : `onclick="saveLeader(${block})"`}>
-            ${isLocked ? '✓' : 'Kaydet'}
+          <input type="text" id="i1_${block}" value="${l1}" placeholder="İsim giriniz"
+            ${l1Locked ? 'disabled class="locked"' : ''}>
+          <button id="b1_${block}"
+            ${l1Locked ? 'disabled class="locked"' : `onclick="saveLeader(${block},1)"`}>
+            ${l1Locked ? '✓' : 'Kaydet'}
+          </button>
+        </div>
+      </td>
+      <td>
+        <div class="input-row">
+          <input type="text" id="i2_${block}" value="${l2}" placeholder="İsim giriniz"
+            ${l2Locked ? 'disabled class="locked"' : ''}>
+          <button id="b2_${block}"
+            ${l2Locked ? 'disabled class="locked"' : `onclick="saveLeader(${block},2)"`}>
+            ${l2Locked ? '✓' : 'Kaydet'}
           </button>
         </div>
       </td>
@@ -354,18 +368,18 @@ async function loadRows(){
   updateStats();
 }
 
-window.saveLeader = async function(block){
-  const name = document.getElementById("i"+block).value.trim();
+window.saveLeader = async function(block, num){
+  const inp = document.getElementById("i"+num+"_"+block);
+  const btn = document.getElementById("b"+num+"_"+block);
+  const name = inp.value.trim();
   if(name === ""){
     alert("Lütfen isim giriniz.");
     return;
   }
-  await setDoc(doc(db,"leaders",String(block)), { name: name });
-  names[block] = name;
-  const btn = document.getElementById("b"+block);
-  const inp = document.getElementById("i"+block);
+  const field = "leader" + num;
+  await setDoc(doc(db,"leaders",String(block)), { [field]: name }, { merge: true });
+  names[block]["l"+num] = name;
 
-  // Lock permanently
   inp.disabled = true;
   inp.classList.add("locked");
   btn.disabled = true;
@@ -379,11 +393,13 @@ window.saveLeader = async function(block){
 function updateStats(){
   let west = 0, east = 0;
   ALL_BLOCKS.forEach(id => {
-    if(names[id] && names[id].trim()){
-      WEST_SET.has(id) ? west++ : east++;
-    }
+    const n = names[id] || {};
+    const count = (n.l1 ? 1 : 0) + (n.l2 ? 1 : 0);
+    if(WEST_SET.has(id)) west += count;
+    else east += count;
   });
-  document.getElementById("val-total").innerHTML = (west+east) + '<span class="stat-denom">/136</span>';
+  const total = west + east;
+  document.getElementById("val-total").innerHTML = total + '<span class="stat-denom">/272</span>';
   document.getElementById("val-west").textContent = west;
   document.getElementById("val-east").textContent = east;
 }
@@ -402,6 +418,24 @@ function applyFilter(){
 }
 
 loadRows();
+
+window.migrateData = async function(){
+  if(!confirm("Eski 'name' verilerini 'leader1' alanına taşımak istiyor musunuz?")) return;
+  let count = 0;
+  for(const block of ALL_BLOCKS){
+    const ref = doc(db,"leaders",String(block));
+    const snap = await getDoc(ref);
+    if(snap.exists()){
+      const data = snap.data();
+      if(data.name && !data.leader1){
+        await setDoc(ref, { leader1: data.name }, { merge: true });
+        count++;
+      }
+    }
+  }
+  alert(count + " kayıt taşındı! Sayfa yenilenecek.");
+  location.reload();
+};
 </script>
 </body>
 </html>
