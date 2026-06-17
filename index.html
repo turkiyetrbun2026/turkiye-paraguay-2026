@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Türkiye - Paraguay Stadyum Tezahürat Senkronizasyonu</title>
+<title>Türkiye - Paraguay Stadyum Tezahürat Senkronizasyon Koordinasyonu</title>
 <style>
 body{
   font-family:Arial,sans-serif;
@@ -110,7 +110,57 @@ button.locked{
   opacity:1;
 }
 
-/* Stats card */
+/* Modal */
+#modal-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  z-index:1000;
+  justify-content:center;
+  align-items:center;
+}
+#modal-overlay.active{ display:flex; }
+#modal-box{
+  background:white;
+  border-radius:12px;
+  padding:28px 32px;
+  max-width:420px;
+  width:90%;
+  text-align:center;
+  box-shadow:0 8px 32px rgba(0,0,0,0.2);
+}
+#modal-box h3{
+  margin-bottom:12px;
+  color:#333;
+  font-size:1.1rem;
+}
+#modal-msg{
+  font-size:15px;
+  color:#444;
+  line-height:1.6;
+  margin-bottom:20px;
+}
+#modal-wa-btn{
+  display:inline-block;
+  background:#25D366;
+  color:white;
+  padding:10px 20px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:bold;
+  font-size:15px;
+  margin-bottom:12px;
+}
+#modal-close{
+  display:block;
+  margin-top:10px;
+  background:none;
+  border:none;
+  color:#999;
+  cursor:pointer;
+  font-size:13px;
+}
 .card{
   background:white;
   border:1px solid #ddd;
@@ -181,6 +231,18 @@ button.locked{
 <h1>🇹🇷 Türkiye - Paraguay 2026 Stadyum Tezahürat Senkronizasyonu</h1>
 <img src="stadium.jpg">
 
+<!-- WhatsApp Modal -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <h3>🎉 Kayıt Başarılı!</h3>
+    <div id="modal-msg"></div>
+    <a id="modal-wa-btn" href="https://chat.whatsapp.com/JkKx32YZF2H3vnOX4UZ872?s=sh&p=i&ilr=1" target="_blank">
+      📱 WhatsApp Grubuna Katıl
+    </a>
+    <button id="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('active')">Kapat</button>
+  </div>
+</div>
+
 <div id="layout">
 
   <!-- LEFT: filter + table -->
@@ -189,7 +251,6 @@ button.locked{
       <strong>Filtrele:</strong>
       <label><input type="checkbox" id="chk-west" checked> WEST</label>
       <label><input type="checkbox" id="chk-east" checked> EAST</label>
-      <button onclick="migrateData()" style="background:#e65100;margin-left:auto;">🔧 Eski Veriyi Taşı</button>
     </div>
 
     <table id="tbl">
@@ -224,6 +285,17 @@ button.locked{
           <div class="stat-label">East</div>
         </div>
       </div>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <div class="ann-title">📱 Tribün Liderleri WhatsApp Grubu</div>
+      <p style="font-size:14px;color:#555;margin-bottom:16px;line-height:1.5;">
+        Tezahürat senkronizasyonu ve koordinasyon için WhatsApp grubuna katılın. Bu grup sadece Tribün Liderleri içindir.
+      </p>
+      <a href="https://chat.whatsapp.com/JkKx32YZF2H3vnOX4UZ872?s=sh&p=i&ilr=1" target="_blank"
+         style="display:inline-block;background:#25D366;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;">
+        📱 WhatsApp Grubuna Katıl
+      </a>
     </div>
 
     <div class="card">
@@ -387,6 +459,11 @@ window.saveLeader = async function(block, num){
   btn.innerHTML = "✓";
   btn.onclick = null;
 
+  // WhatsApp modal
+  document.getElementById("modal-msg").innerHTML =
+    `<strong>${name}</strong>, lütfen aşağıdaki linke tıklayarak<br>Tribün Liderleri Senkronizasyon WhatsApp grubuna katıl!`;
+  document.getElementById("modal-overlay").classList.add("active");
+
   updateStats();
 };
 
@@ -418,24 +495,6 @@ function applyFilter(){
 }
 
 loadRows();
-
-window.migrateData = async function(){
-  if(!confirm("Eski 'name' verilerini 'leader1' alanına taşımak istiyor musunuz?")) return;
-  let count = 0;
-  for(const block of ALL_BLOCKS){
-    const ref = doc(db,"leaders",String(block));
-    const snap = await getDoc(ref);
-    if(snap.exists()){
-      const data = snap.data();
-      if(data.name && !data.leader1){
-        await setDoc(ref, { leader1: data.name }, { merge: true });
-        count++;
-      }
-    }
-  }
-  alert(count + " kayıt taşındı! Sayfa yenilenecek.");
-  location.reload();
-};
 </script>
 </body>
 </html>
