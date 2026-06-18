@@ -180,7 +180,7 @@ button.locked{
 }
 .stats-grid{
   display:grid;
-  grid-template-columns:1fr 1fr 1fr;
+  grid-template-columns:1fr 1fr 1fr 1fr;
   gap:8px;
   text-align:center;
 }
@@ -282,7 +282,7 @@ button.locked{
       <div class="card-title">📊 Kayıt Durumu</div>
       <div class="stats-grid">
         <div class="stat-box">
-          <div class="stat-num" id="val-total">–<span class="stat-denom">/136</span></div>
+          <div class="stat-num" id="val-total">–<span class="stat-denom">/272</span></div>
           <div class="stat-label">Toplam Lider</div>
         </div>
         <div class="stat-box">
@@ -293,13 +293,20 @@ button.locked{
           <div class="stat-num" id="val-east" style="color:#e65100">–</div>
           <div class="stat-label">East</div>
         </div>
+        <div class="stat-box">
+          <div class="stat-num" id="val-davulcu" style="color:#6a1b9a">–</div>
+          <div class="stat-label">Davulcu</div>
+        </div>
       </div>
     </div>
 
     <div class="card" style="text-align:center;">
-      <div class="ann-title">📱 Tribün Liderleri ve Davulcular WhatsApp Grubu</div>
+      <div class="ann-title">📱 Tribün Liderleri ve 🥁 Davulcu WhatsApp Grubu</div>
+      <p style="font-size:14px;color:#555;margin-bottom:8px;line-height:1.5;">
+        Tezahürat senkronizasyonu ve koordinasyon için WhatsApp grubuna katılın.
+      </p>
       <p style="font-size:14px;color:#555;margin-bottom:16px;line-height:1.5;">
-        Tezahürat senkronizasyonu ve koordinasyon için WhatsApp grubuna katılın. ⚠️ Bu grup sadece Tribün Liderleri ve Davulcular içindir. ⚠️
+        ⚠️ Bu grup sadece Tribün Liderleri ve davulcular içindir. ⚠️
       </p>
       <a href="https://chat.whatsapp.com/JkKx32YZF2H3vnOX4UZ872?s=sh&p=i&ilr=1" target="_blank"
          style="display:inline-block;background:#25D366;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;">
@@ -446,17 +453,19 @@ window.saveLeader = async function(block, num){
 };
 
 function updateStats(){
-  let west = 0, east = 0;
+  let west = 0, east = 0, davulcu = 0;
   ALL_BLOCKS.forEach(id => {
     const n = names[id] || {};
     const count = (n.l1 ? 1 : 0) + (n.l2 ? 1 : 0);
     if(WEST_SET.has(id)) west += count;
     else east += count;
+    if(n.dav) davulcu++;
   });
   const total = west + east;
   document.getElementById("val-total").innerHTML = total + '<span class="stat-denom">/272</span>';
   document.getElementById("val-west").textContent = west;
   document.getElementById("val-east").textContent = east;
+  document.getElementById("val-davulcu").textContent = davulcu;
 }
 
 // Filter
