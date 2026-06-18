@@ -33,17 +33,17 @@ img{
   align-items:flex-start;
 }
 #left-col{
-  flex:0 0 650px;
+  flex:0 0 510px;
   min-width:0;
-  max-width:100%;
+  max-width:510px;
 }
 #right-col{
   flex:1;
   display:flex;
   flex-direction:column;
   gap:16px;
-  position:sticky;
-  top:20px;
+  position:static;
+  align-self:flex-start;
 }
 
 /* Filter bar */
@@ -74,21 +74,24 @@ table{
 }
 th,td{
   border:1px solid #ddd;
-  padding:10px;
+  padding:4px 6px;
+  overflow:hidden;
 }
+th:nth-child(1){ width:50px; }
+th:nth-child(2){ width:45px; }
 th{
   background:#d62828;
   color:white;
 }
 .input-row{
-  display:flex;
-  align-items:center;
-  gap:8px;
+  display:block;
 }
 input[type=text]{
-  width:140px;
-  padding:6px;
-  font-size:14px;
+  width:100%;
+  max-width:120px;
+  padding:5px;
+  font-size:13px;
+  box-sizing:border-box;
 }
 button{
   padding:7px 12px;
@@ -263,6 +266,7 @@ button.locked{
         <tr>
           <th>Taraf</th>
           <th>Blok</th>
+          <th>Davulcu</th>
           <th>Lider 1</th>
           <th>Lider 2</th>
         </tr>
@@ -325,36 +329,8 @@ button.locked{
     </div>
 
     <div class="card">
-      <div class="ann-title">🎤 Dakika Tezahürat Planı ( Draft - Halen Üzerinde Çalışılıyor) </div>
-
-      <div style="display:flex;flex-direction:column;gap:4px;">
-
-        <div>
-          <p style="font-size:14px;color:#333;margin-bottom:2px;"><strong>Tezahürat #1 — Lay Lay Türkiye!</strong></p>
-          <p style="font-size:13px;color:#555;line-height:1.45;margin-top:2px;">Lay lay lay laayy AAAA TÜRKİYE</p>
-        </div>
-
-        <div>
-          <p style="font-size:14px;color:#333;margin-bottom:2px;"><strong>Tezahürat #2 — Kırmızı - Beyaz - En Büyük Türkiye</strong> &nbsp;<a href="https://www.youtube.com/watch?v=MbOs1Ht32ms" target="_blank" style="display:inline-block;background:#d62828;color:white;padding:3px 10px;border-radius:5px;text-decoration:none;font-size:12px;font-weight:bold;vertical-align:middle;">▶ YouTube</a></p>
-          <p style="font-size:13px;color:#555;line-height:1.45;margin-top:2px;">Seyirciler karşılıklı olarak Kırmızı / Beyaz / En Büyük Türkiye şeklinde tezahürat yaparlar.</p>
-        </div>
-
-        <div>
-          <p style="font-size:14px;color:#333;margin-bottom:2px;"><strong>Tezahürat #3 — Bu Maçı Alıcaz Başka Yolu Yok!</strong> &nbsp;<a href="https://www.youtube.com/watch?v=tcbgHpt9Nxo" target="_blank" style="display:inline-block;background:#d62828;color:white;padding:3px 10px;border-radius:5px;text-decoration:none;font-size:12px;font-weight:bold;vertical-align:middle;">▶ YouTube</a></p>
-          <p style="font-size:13px;color:#555;line-height:1.45;margin-top:2px;">Ritmik şekilde söylenir.</p>
-        </div>
-
-        <div>
-          <p style="font-size:14px;color:#333;margin-bottom:2px;"><strong>Tezahürat #4 — Türkiye!</strong> &nbsp;<a href="https://www.youtube.com/watch?v=dN39Iu4uCwU&list=OLAK5uy_l-HR8w93ytXxsjm1fLFmu3Vp09dcMkn0Y&index=5" target="_blank" style="display:inline-block;background:#d62828;color:white;padding:3px 10px;border-radius:5px;text-decoration:none;font-size:12px;font-weight:bold;vertical-align:middle;">▶ YouTube</a></p>
-          <p style="font-size:13px;color:#555;line-height:1.45;margin-top:2px;">Türkiye! sonra üç kere kuvvetli alkış.</p>
-        </div>
-
-        <div>
-          <p style="font-size:14px;color:#333;margin-bottom:2px;"><strong>Tezahürat #5 — Vur! Kır! Parçala Bu Maçı Kazan!</strong> &nbsp;<a href="https://www.youtube.com/watch?v=b9jXgzsmHUA&list=OLAK5uy_l-HR8w93ytXxsjm1fLFmu3Vp09dcMkn0Y&index=8" target="_blank" style="display:inline-block;background:#d62828;color:white;padding:3px 10px;border-radius:5px;text-decoration:none;font-size:12px;font-weight:bold;vertical-align:middle;">▶ YouTube</a></p>
-          <p style="font-size:13px;color:#555;line-height:1.45;margin-top:2px;">Yüksek sesle tempolu söylenir.</p>
-        </div>
-
-      </div>
+      <div class="ann-title">🎤 Kullanılacak Tezahüratlar</div>
+      <p style="font-size:14px;color:#999;font-style:italic;">Yakında paylaşılacak — TBD</p>
     </div>
 
   </div>
@@ -402,12 +378,13 @@ async function loadRows(){
   for(const block of ALL_BLOCKS){
     const ref = doc(db,"leaders",String(block));
     const snap = await getDoc(ref);
-    let l1 = "", l2 = "";
+    let l1 = "", l2 = "", dav = "";
     if(snap.exists()){
       l1 = snap.data().leader1 || "";
       l2 = snap.data().leader2 || "";
+      dav = snap.data().davulcu || "";
     }
-    names[block] = { l1, l2 };
+    names[block] = { l1, l2, dav };
 
     const side = WEST_SET.has(block) ? "west" : "east";
     const row = document.createElement("tr");
@@ -415,29 +392,28 @@ async function loadRows(){
 
     const l1Locked = !!l1;
     const l2Locked = !!l2;
+    const davLocked = !!dav;
 
     row.innerHTML = `
       <td>${side === "west" ? "West" : "East"}</td>
       <td>${block}</td>
       <td>
-        <div class="input-row">
-          <input type="text" id="i1_${block}" value="${l1}" placeholder="İsim giriniz"
-            ${l1Locked ? 'disabled class="locked"' : ''}>
-          <button id="b1_${block}"
-            ${l1Locked ? 'disabled class="locked"' : `onclick="saveLeader(${block},1)"`}>
-            ${l1Locked ? '✓' : 'Kaydet'}
-          </button>
-        </div>
+        ${davLocked
+          ? `<input type="text" id="idav_${block}" value="${dav}" disabled class="locked">`
+          : `<input type="text" id="idav_${block}" placeholder="İsim + Enter" onkeydown="if(event.key==='Enter') saveLeader(${block},'dav')">`
+        }
       </td>
       <td>
-        <div class="input-row">
-          <input type="text" id="i2_${block}" value="${l2}" placeholder="İsim giriniz"
-            ${l2Locked ? 'disabled class="locked"' : ''}>
-          <button id="b2_${block}"
-            ${l2Locked ? 'disabled class="locked"' : `onclick="saveLeader(${block},2)"`}>
-            ${l2Locked ? '✓' : 'Kaydet'}
-          </button>
-        </div>
+        ${l1Locked
+          ? `<input type="text" id="i1_${block}" value="${l1}" disabled class="locked">`
+          : `<input type="text" id="i1_${block}" placeholder="İsim + Enter" onkeydown="if(event.key==='Enter') saveLeader(${block},1)">`
+        }
+      </td>
+      <td>
+        ${l2Locked
+          ? `<input type="text" id="i2_${block}" value="${l2}" disabled class="locked">`
+          : `<input type="text" id="i2_${block}" placeholder="İsim + Enter" onkeydown="if(event.key==='Enter') saveLeader(${block},2)">`
+        }
       </td>
     `;
     tbody.appendChild(row);
@@ -446,23 +422,20 @@ async function loadRows(){
 }
 
 window.saveLeader = async function(block, num){
-  const inp = document.getElementById("i"+num+"_"+block);
-  const btn = document.getElementById("b"+num+"_"+block);
+  const prefix = num === 'dav' ? 'idav' : 'i'+num;
+  const inp = document.getElementById(prefix+"_"+block);
   const name = inp.value.trim();
   if(name === ""){
     alert("Lütfen isim giriniz.");
     return;
   }
-  const field = "leader" + num;
+  const field = num === 'dav' ? 'davulcu' : 'leader' + num;
   await setDoc(doc(db,"leaders",String(block)), { [field]: name }, { merge: true });
-  names[block]["l"+num] = name;
+  if(num === 'dav') names[block].dav = name;
+  else names[block]["l"+num] = name;
 
   inp.disabled = true;
   inp.classList.add("locked");
-  btn.disabled = true;
-  btn.classList.add("locked");
-  btn.innerHTML = "✓";
-  btn.onclick = null;
 
   // WhatsApp modal
   document.getElementById("modal-msg").innerHTML =
